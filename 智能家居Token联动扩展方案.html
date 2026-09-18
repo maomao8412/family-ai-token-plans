@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>智能家居执行层 · Token 平台扩展方案</title>
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --ink:#1c2733; --ink-2:#4a5a6a; --ink-3:#7e8fa0;
+    --line:#dde4ea; --blue:#1a3a5c; --blue-2:#2e6da4; --blue-soft:#e8eff6;
+    --teal:#1e7a6f; --teal-soft:#e4f1ef;
+    --amber:#c9771e; --amber-soft:#faf0e2; --green:#2e7d4f; --red:#b03a2e;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.8;font-size:16px}
+  .page{max-width:960px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 26px;border-bottom:3px solid var(--teal)}
+  .kicker{font-size:12.5px;letter-spacing:.3em;color:var(--amber);font-weight:700;margin:0 0 12px}
+  h1{font-size:clamp(28px,5vw,42px);line-height:1.25;margin:0 0 14px;font-weight:800}
+  .lede{font-size:18px;color:var(--ink-2);margin:0 0 16px;max-width:760px}
+  .meta{font-size:13px;color:var(--ink-3)}
+  .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:26px 0 6px}
+  .scard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .scard b{display:block;font-size:21px;color:var(--teal);font-family:var(--mono)}
+  .scard span{font-size:13px;color:var(--ink-2)}
+  nav{padding:14px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+  nav a{color:var(--blue-2);text-decoration:none;margin-right:14px;white-space:nowrap}
+  nav a:hover{text-decoration:underline}
+  main{padding:34px 0 10px}
+  section{margin-bottom:54px}
+  h2{font-size:24px;margin:0 0 4px;font-weight:800;color:var(--blue)}
+  .sub{font-family:var(--mono);font-size:13px;color:var(--ink-3);margin:0 0 18px}
+  h3{font-size:17.5px;margin:24px 0 8px}
+  p{margin:0 0 14px}
+  .tag{display:inline-block;background:var(--teal-soft);color:var(--teal);font-size:12px;padding:2px 9px;border-radius:99px;margin-right:6px;font-weight:600}
+  .tag.w{background:var(--amber-soft);color:var(--amber)}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:14.5px;margin:14px 0}
+  th,.rowhead{background:#eef2f6;text-align:left;font-weight:700}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td .m{font-family:var(--mono);font-size:13px;color:var(--teal)}
+  .wrap{overflow-x:auto}
+  .note{background:var(--amber-soft);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;font-size:14.5px;margin:16px 0}
+  .note b{color:var(--amber)}
+  .good{background:#eaf4ee;border-left:4px solid var(--green);border-radius:0 8px 8px 0;padding:12px 16px;font-size:14.5px;margin:16px 0}
+  .arch{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin:16px 0}
+  .arch svg{width:100%;height:auto;display:block}
+  .phase{border-left:3px solid var(--teal);padding:2px 0 2px 18px;margin:18px 0}
+  .phase .ph-t{font-weight:800;color:var(--teal)}
+  .phase .ph-m{font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+  .kpi{background:var(--card);border:1px dashed var(--line);border-radius:8px;padding:10px 12px;font-size:13px}
+  .kpi b{display:block;color:var(--teal);font-size:16px;font-family:var(--mono)}
+  footer{border-top:3px solid var(--teal);margin-top:10px;padding:24px 0 60px;font-size:13px;color:var(--ink-3)}
+  footer h3{font-size:14px;color:var(--ink);margin:0 0 8px}
+  footer ul{margin:0;padding-left:18px}
+  footer li{margin-bottom:5px}
+  .prev{margin-top:14px}
+  @media print{
+    body{background:#fff;font-size:11.5pt}
+    nav{display:none}
+    .arch,.scard,.kpi{border-color:#999}
+    a{color:#000;text-decoration:none}
+  }
+</style>
+</head>
+<body>
+<header class="page">
+  <p class="kicker">扩展方案 · 家庭 AI 计量站之执行层</p>
+  <h1>智能家居执行层：<br>让入口长出手和眼</h1>
+  <p class="lede">本方案是《电视盒子 Token 平台商业方案》的扩展篇。智能家居不是第四个入口——它是让已有入口"变厚"的执行层与感知层：电视负责说，盒子负责想，手机负责付，智能家居负责做。token 平台的路由引擎由此获得第二类调用：不只路由到模型，还路由到设备。</p>
+  <p class="meta">2026-09 · 排期建议：主方案 Phase 2 之后启动（主方案第 7–12 月）</p>
+  <div class="summary">
+    <div class="scard"><b>8000 亿 / 3 亿台</b><span>2026 全屋智能市场规模与出货量预测；设备渗透率仅 16%（英美 45%+），增量空间大</span></div>
+    <div class="scard"><b>Matter 1.6</b><span>2026 年 6 月发布：摄像头首次纳入规范、NFC 触碰配网——中立平台第一次可能跨品牌控制设备</span></div>
+    <div class="scard"><b>55%+</b><span>2026 年智能音箱大模型渗透率（IDC）——交互入口的战争已经结束，执行入口的战争刚开始</span></div>
+    <div class="scard"><b>≈0 元</b><span>单次设备控制调用的边际成本——真正的成本是 AI 编排推理，计量单位仍然是 token</span></div>
+  </div>
+</header>
+
+<div class="page">
+<nav>
+  <a href="#s1">一、三层入口</a><a href="#s2">二、窗口与时机</a><a href="#s3">三、架构</a><a href="#s4">四、场景包</a><a href="#s5">五、计量设计</a><a href="#s6">六、Matter 策略</a><a href="#s7">七、隐私红线</a><a href="#s8">八、排期与闸门</a><a href="#s9">九、风险</a>
+</nav>
+
+<main>
+
+<section id="s1">
+  <h2>一、三层入口模型：交互已关门，执行正开门</h2>
+  <p class="sub">同一个家庭 AI，有三个可以"从外部够到它"的位置——价值密度完全不同</p>
+  <div class="wrap">
+  <table>
+    <tr><th>入口类型</th><th>谁在做</th><th>战况</th><th>本方案的位置</th></tr>
+    <tr><td class="rowhead">交互入口<br><span style="font-weight:400;color:var(--ink-3)">谁在听、谁在说</span></td><td>小度、天猫精灵、小爱音箱；智能电视语音助手</td><td><span class="tag w">已关闭</span>硬件补贴到近白送、AI 订阅未跑通、大模型渗透率超 55%——交互层已经是大厂的地盘</td><td>不进入。电视盒子方案的"电视+语音"只是呈现层，不参与入口竞争</td></tr>
+    <tr><td class="rowhead">执行入口<br><span style="font-weight:400;color:var(--ink-3)">谁能动手</span></td><td>华为小艺"空间智能体"、小米 HyperOS——但都困在自家生态</td><td><span class="tag">正在打开</span>大模型让设备从 if-then 自动化升级为自然语言编排+主动协同；Matter 1.6 让跨品牌控制第一次可行</td><td><b>主战场</b>：中立平台的"设备路由层"，跨品牌+可计量</td></tr>
+    <tr><td class="rowhead">数据入口<br><span style="font-weight:400;color:var(--ink-3)">谁知道家里发生了什么</span></td><td>无人真正做好——隐私与信任是硬门槛</td><td><span class="tag">慢变量</span>家庭状态模型（作息、习惯、偏好）是最深的护城河，也是最大的雷区</td><td>长期资产：家庭状态机，本地优先</td></tr>
+  </table>
+  </div>
+  <p>结论先行：<b>智能家居是让电视盒子入口"变厚"的那一层，不是又一个要抢的入口。</b>入口负责收 token，智能家居负责让 token 花得更快、家庭更离不开。对话是低频高价值消耗，场景编排和主动服务才是高频持续的 token 消耗。</p>
+</section>
+
+<section id="s2">
+  <h2>二、窗口与时机：三个信号同时到位</h2>
+  <p class="sub">执行层的三个前置条件，在 2026 年第一次同时满足</p>
+  <h3>信号一：政策把全屋智能推上快车道</h3>
+  <p>商务部等 8 部门 2026 年 9 月印发《促进智能家居消费行动方案》；全屋智能市场规模预计 8000 亿元、出货超 3 亿台，渗透率有望从约 16% 向 35% 爬坡。这意味着未来三年进入家庭的新设备比例将大幅提高——<b>新设备大概率带 Matter 或开放 API，中立平台的接入成本随时间递减</b>。</p>
+  <h3>信号二：Matter 1.6 补上最后一块关键拼图</h3>
+  <p>Matter 1.6（2026 年 6 月）首次把<span class="tag">摄像头</span>纳入规范，支持 <span class="tag">NFC 触碰配网</span>，并推进无感门锁等场景；CES 2026 上主流生态全面拥抱 Matter。摄像头入网意味着"看护类场景"（老人、儿童、宠物）第一次可以建立在中立标准上，而不是绑定某家私有云。</p>
+  <h3>信号三：大厂验证了方向，也暴露了缺陷</h3>
+  <p>华为小艺管家 6.0 升级为"空间智能体"：模糊指令拆解、主动联动全屋设备、声纹区分成员——方向完全正确。但它的能力边界被锁死在鸿蒙生态内；小米 HyperOS 同理。<b>大厂证明了"AI 编排设备"是真实需求，却因为生态封闭做不成"跨品牌的家庭 AI 操作系统"。</b>这个缺陷就是中立平台的位置。</p>
+</section>
+
+<section id="s3">
+  <h2>三、产品架构：在平台层插入设备路由</h2>
+  <p class="sub">主方案的场景引擎长出设备路由层——LLM 编排的是"能力原子"，不是具体设备</p>
+  <div class="arch">
+  <svg viewBox="0 0 920 470" role="img" aria-label="扩展架构：在平台层增加设备路由与能力原子，下接四类设备接入通道">
+    <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1e7a6f"/></marker></defs>
+    <g font-family="system-ui,-apple-system,'PingFang SC',sans-serif">
+      <!-- 主平台（简图引用） -->
+      <rect x="30" y="20" width="860" height="64" rx="10" fill="#e8eff6" stroke="#1a3a5c" stroke-width="1.5"/>
+      <text x="460" y="46" text-anchor="middle" font-size="14" font-weight="700" fill="#1a3a5c">平台层（主方案）：无感路由引擎 ｜ 家庭钱包 ｜ 安全护栏 ｜ 场景引擎</text>
+      <text x="460" y="68" text-anchor="middle" font-size="12" fill="#4a5a6a">模型路由不变 —— 本方案只新增下半部分</text>
+      <!-- 设备路由层 -->
+      <rect x="30" y="120" width="860" height="120" rx="10" fill="#ffffff" stroke="#1e7a6f" stroke-width="2"/>
+      <text x="460" y="148" text-anchor="middle" font-size="16" font-weight="700" fill="#1e7a6f">设备路由层（本方案新增）</text>
+      <g font-size="12.5" fill="#1c2733">
+        <rect x="60" y="165" width="185" height="58" rx="7" fill="#e4f1ef"/><text x="152" y="188" text-anchor="middle" font-weight="700">能力原子抽象</text><text x="152" y="207" text-anchor="middle" fill="#4a5a6a">开关·调温·亮度·布防·播放</text>
+        <rect x="268" y="165" width="185" height="58" rx="7" fill="#e4f1ef"/><text x="360" y="188" text-anchor="middle" font-weight="700">场景编译器</text><text x="360" y="207" text-anchor="middle" fill="#4a5a6a">自然语言→意图→编排→执行回读</text>
+        <rect x="476" y="165" width="185" height="58" rx="7" fill="#e4f1ef"/><text x="568" y="188" text-anchor="middle" font-weight="700">家庭状态机（本地）</text><text x="568" y="207" text-anchor="middle" fill="#4a5a6a">作息·习惯·在离家·传感事件</text>
+        <rect x="684" y="165" width="176" height="58" rx="7" fill="#e4f1ef"/><text x="772" y="188" text-anchor="middle" font-weight="700">规则下沉引擎</text><text x="772" y="207" text-anchor="middle" fill="#4a5a6a">高频自动化本地执行不耗token</text>
+      </g>
+      <!-- 接入通道 -->
+      <rect x="30" y="278" width="860" height="70" rx="10" fill="#f7faf9" stroke="#dde4ea"/>
+      <text x="460" y="302" text-anchor="middle" font-size="13" font-weight="700" fill="#4a5a6a">设备接入通道（按优先级）</text>
+      <g font-size="12.5">
+        <text x="150" y="328" text-anchor="middle" fill="#1e7a6f" font-weight="700">① Matter/WiFi/Thread</text>
+        <text x="380" y="328" text-anchor="middle" fill="#1e7a6f" font-weight="700">② 米家开放平台</text>
+        <text x="590" y="328" text-anchor="middle" fill="#1e7a6f" font-weight="700">③ 品牌云 API（海尔美的格力）</text>
+        <text x="800" y="328" text-anchor="middle" fill="#1e7a6f" font-weight="700">④ 红外/蓝牙兜底</text>
+      </g>
+      <line x1="460" y1="240" x2="460" y2="276" stroke="#1e7a6f" stroke-width="1.5" marker-end="url(#ar2)"/>
+      <!-- 设备 -->
+      <rect x="30" y="390" width="860" height="60" rx="10" fill="#eef2f6" stroke="#dde4ea"/>
+      <text x="460" y="416" text-anchor="middle" font-size="13.5" font-weight="700" fill="#4a5a6a">家庭设备：照明 ｜ 窗帘 ｜ 空调/地暖 ｜ 门锁 ｜ 传感器（温湿度/人体/门窗）｜ 摄像头（Matter 1.6）｜ 家电（红外/品牌云）</text>
+      <text x="460" y="438" text-anchor="middle" font-size="12" fill="#7e8fa0">优先覆盖组合：照明 + 窗帘 + 空调 —— 中国家庭最高频的三个编排对象</text>
+      <line x1="460" y1="348" x2="460" y2="388" stroke="#7e8fa0" stroke-width="1.5" marker-end="url(#ar2)"/>
+    </g>
+  </svg>
+  </div>
+  <h3>能力原子：工程上最重要的一层抽象</h3>
+  <p>LLM 不直接操作设备——它操作的是标准化的<span class="tag">能力原子</span>（开/关、上调/下调、设定值、查询状态、模式切换），由适配器把原子翻译成 Matter 指令或品牌云 API。好处有三：① 新模型无需重新适配设备；② 新设备无需重新适配模型；③ 权限控制做在原子级——儿童账号可以开灯，但不能开摄像头。这一层是本方案全部工程量的核心，也是未来接入 B 端（物业、长租公寓）时的复用资产。</p>
+  <h3>规则下沉：token 消耗的节流阀</h3>
+  <p>"回家开灯、离家布防"这类高频规则，由 AI 编排<span class="tag">一次</span>后编译成本地规则，下沉到盒子执行——此后不联网、不耗 token。LLM 只在三种时刻介入：<b>创建/修改场景</b>（自然语言编排）、<b>理解异常</b>（传感器报了个说不通的事件）、<b>主动服务</b>（夜间温湿度异常调整、老人活动轨迹异常提醒）。这个设计同时压住 token 成本（家庭月消耗可预估）和隐私风险（日常不外传），是执行层能否盈利的关键。</p>
+</section>
+
+<section id="s4">
+  <h2>四、三个旗舰场景包：从"能联动"到"愿意付钱"</h2>
+  <p class="sub">联动是能力，场景包才是商品——按"家庭角色"打包，不按设备类型</p>
+  <div class="wrap">
+  <table>
+    <tr><th>场景包</th><th>定价</th><th>内容</th><th>token 消耗模型（估算）</th><th>付费心理</th></tr>
+    <tr>
+      <td class="rowhead">睡眠包</td>
+      <td><span class="m">29 元/月</span></td>
+      <td>一句话全屋晚安/早安程序；夜间温湿度·光照·噪音自动调节；醒来渐亮唤醒；睡眠环境月报</td>
+      <td><span class="m">编排 1–3K/次；环境调节事件 2K/次；月报 10K</span></td>
+      <td>低门槛尝鲜包：照明+窗帘+空调是普及率最高的三件套，开箱即用</td>
+    </tr>
+    <tr>
+      <td class="rowhead">陪伴包</td>
+      <td><span class="m">39 元/月</span></td>
+      <td>老人看护（活动轨迹异常提醒、用药播报到电视、跌倒事件推送）；儿童到家感知（门锁+电视问候+家长手机通知）；宠物看护</td>
+      <td><span class="m">事件理解 3–5K/次；主动播报 2K/次</span></td>
+      <td>情感刚需：为父母孩子付费意愿最强，与主方案"为孩子付费"的锚点一致</td>
+    </tr>
+    <tr>
+      <td class="rowhead">能耗包</td>
+      <td><span class="m">19 元/月</span></td>
+      <td>全屋分项电量估算；AI 节电建议；峰谷电价调度（热水器/充电桩错峰）；月度电费报告</td>
+      <td><span class="m">分析 5K/次；调度 1K/次；月报 10K</span></td>
+      <td>省电费=直接可计算的价值，"帮你省钱"是最硬的付费理由</td>
+    </tr>
+  </table>
+  </div>
+  <div class="good">与主方案商业模式的衔接：设备联动能力<b>不单独收费</b>——设备调用边际成本≈0，打包进 29/49 元主订阅；三个场景包单独订阅。心智模型保持一个字：用户买的是"AI 替我干活"，不是"我能控制设备"（控制是免费的，会思考的联动才收费）。</div>
+</section>
+
+<section id="s5">
+  <h2>五、计量设计：只按智能收费，不按动作收费</h2>
+  <p class="sub">一个账户、一种货币（token）、三类消耗——心智必须简单</p>
+  <div class="wrap">
+  <table>
+    <tr><th>消耗类型</th><th>触发</th><th>是否计量</th><th>说明</th></tr>
+    <tr><td class="rowhead">设备指令</td><td>"关灯"、规则下沉后的本地自动化</td><td>不计费</td><td>边际成本≈0；且高频动作若计费会毁掉使用意愿</td></tr>
+    <tr><td class="rowhead">AI 编排</td><td>自然语言创建/修改场景、模糊指令拆解</td><td><b>计 token</b></td><td>执行层的主要 token 来源，走家庭钱包</td></tr>
+    <tr><td class="rowhead">主动智能</td><td>异常理解、环境自动调节、看护事件、月报</td><td><b>计 token</b></td><td>持续消耗；场景包订阅内含额度，超出走钱包</td></tr>
+  </table>
+  </div>
+  <p>账单呈现两个原则：<b>① 电视端只显示进度条，不显示金额</b>（客厅是公共屏幕，钱包动作只在手机端）；<b>② 用量翻译成行为</b>——"本月全家 AI 替家里做了 214 次决策"，而不是"消耗 38 万 token"。token 是平台语言，不是用户语言。</p>
+</section>
+
+<section id="s6">
+  <h2>六、Matter 窗口期策略：四年一次的牌，按优先级打</h2>
+  <p class="sub">中立平台与标准协议互为借力——标准越普及，中立性越值钱</p>
+  <div class="wrap">
+  <table>
+    <tr><th>优先级</th><th>通道</th><th>覆盖</th><th>策略</th></tr>
+    <tr><td class="rowhead">① 首发</td><td>Matter over WiFi/Thread</td><td>照明、插座、窗帘、传感器、门锁、摄像头（1.6 起）</td><td>标准通道，零谈判成本；认证费用一次投入长期有效；新品占比逐年提高</td></tr>
+    <tr><td class="rowhead">② 必要妥协</td><td>米家开放平台</td><td>约 22% 份额的存量生态</td><td>能接多少接多少；同时在销售话术上引导"米家设备继续用米家 App，联动交给平台"</td></tr>
+    <tr><td class="rowhead">③ 慢谈判</td><td>海尔/美的/格力品牌云</td><td>白电主力</td><td>逐家谈 API 合作；白电价值高（能耗包依赖）但不急——MVP 只需照明+窗帘+空调</td></tr>
+    <tr><td class="rowhead">④ 兜底</td><td>红外遥控器 + 蓝牙</td><td>存量非智能家电</td><td>盒子自带红外发射，让"老空调"也能进编排——降低新家庭的使用门槛</td></tr>
+  </table>
+  </div>
+  <div class="note"><b>现实预期：</b>2027 年底覆盖一个普通家庭 60–70% 的设备算成功，不要追求 100%——智能家居的碎片化是常态，方案的价值是"把最常用的三件事做好"，不是"什么都接"。集成商渠道（全屋智能装修公司）是隐藏杠杆：他们正从封闭生态转向 Matter 方案寻找差异化，平台向集成商输出能力原子与编排引擎，是低成本获得"整屋设备"的通路。</div>
+</section>
+
+<section id="s7">
+  <h2>七、隐私红线：摄像头入屋之日，信任就是全部筹码</h2>
+  <p class="sub">执行层的数据敏感度比对话高一个数量级——设计原则先于功能</p>
+  <p>五条硬规则，写进产品规格而不是隐私政策：</p>
+  <p><b>① 视频流不出家庭</b>——摄像头画面在盒子端做本地事件检测（VLM/运动检测），云端只收"事件帧 + 文本描述"（"客厅有人摔倒"），不收连续视频流；<b>② 本地人脸只存特征</b>——家庭成员识别在端侧完成，不建云端人脸库；<b>③ 状态机本地存储</b>——作息、在离家、习惯数据留在盒子，云端只见匿名统计；<b>④ 物理遮蔽开关</b>——摄像头硬件级遮挡 + 访客模式（亲友到访一键全局静默）；<b>⑤ 儿童房与卧室默认关闭智能看护</b>，开启需要二次确认并周期性提醒。</p>
+  <div class="good">这五条不只是合规，是定价权：陪伴包 39 元/月能收上来，前提是家长相信"摄像头数据不出家门"。隐私做对，看护场景才成立；看护场景成立，执行层才有利润来源。</div>
+</section>
+
+<section id="s8">
+  <h2>八、排期与闸门：嵌在主方案 Phase 2 之后启动</h2>
+  <p class="sub">主方案第 7–12 月（盒子量产期）并行启动设备层，第 10 个月起交付场景包</p>
+  <div class="phase">
+    <div class="ph-t">M7–M9 · 执行层 MVP</div>
+    <div class="ph-m">团队增量：嵌入式/IoT 2 人、后端 1 人（复用主方案团队其余角色）</div>
+    <p>Matter 接入 + 能力原子抽象 + 场景编译器 Alpha；睡眠包 MVP 上线内测（照明+窗帘+空调三类设备、20 个内测家庭）；红外兜底方案验证。</p>
+    <div class="kpis">
+      <div class="kpi"><b>编排成功率</b><span>一句话编排一次成功率 ≥85%</span></div>
+      <div class="kpi"><b>执行回读</b><span>执行后状态确认 100% 覆盖</span></div>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="ph-t">M10–M12 · 场景包商业化</div>
+    <div class="ph-m">陪伴包（依赖摄像头事件链路）+ 能耗包 Beta</div>
+    <p>三包上线内测家庭订阅；与 1–2 家全屋智能集成商签能力输出意向；家庭状态机 V1（本地作息学习）。</p>
+    <div class="kpis">
+      <div class="kpi"><b>Go/No-Go 门 3</b><span>睡眠包周均主动编排 ≥5 次/户</span></div>
+      <div class="kpi"><b>付费验证</b><span>场景包付费率 ≥8%（内测户）</span></div>
+      <div class="kpi"><b>粘性信号</b><span>场景包户月 token 消耗 ≥ 非场景包户 1.8 倍</span></div>
+      <div class="kpi"><b>隐私零事件</b><span>数据出户事件 = 0</span></div>
+    </div>
+  </div>
+  <p>若闸门未过：执行层降级为"免费联动功能"保留在主订阅内，资源退回主方案的场景引擎——<b>设备层是放大器，不是前提</b>，这个原则与主方案的"盒子是增强器不是前提"一脉相承。</p>
+</section>
+
+<section id="s9">
+  <h2>九、风险清单</h2>
+  <p class="sub">按杀伤力排序</p>
+  <div class="wrap">
+  <table>
+    <tr><th>风险</th><th>杀伤力</th><th>对冲</th></tr>
+    <tr><td>摄像头隐私事件（哪怕一次）</td><td>致命</td><td>第七节五条硬规则 + 隐私保险 + 事件透明日志（用户可查每一次数据出户）</td></tr>
+    <tr><td>Matter 推进不及预期 / 大厂阳奉阴违</td><td>高</td><td>四通道并行（第六节）；红外兜底保证基础体验；集成商渠道对冲零售碎片化</td></tr>
+    <tr><td>米家 API 收紧</td><td>中</td><td>米家只作增量不作依赖；销售话术提前管理预期</td></tr>
+    <tr><td>大厂补上跨品牌短板（如华为全面拥抱 Matter 后开放接入）</td><td>中</td><td>差异化后撤到"跨品牌+可计量+可迁移"三件套——大厂永远做不到"按户计量中立账单"</td></tr>
+    <tr><td>设备碎片化导致适配成本失控</td><td>中</td><td>能力原子层收敛适配面；只做top设备品类；适配数量设年度上限</td></tr>
+    <tr><td>场景包付费率不达标</td><td>中</td><td>闸门前置；未过则联动能力免费并入主订阅，损失可控（已摊薄在主方案内）</td></tr>
+  </table>
+  </div>
+  <p>最后回到一句话：主方案回答的是"家庭 AI 的入口放在哪"，本方案回答的是"入口为什么会长出肌肉"。电视负责说、盒子负责想、手机负责付、智能家居负责做——四件事共用一个钱包，这才是"家庭 AI 计量站"的完整形态。</p>
+</section>
+
+</main>
+
+<footer class="page">
+  <h3>数据来源</h3>
+  <ul>
+    <li>全屋智能 8000 亿、出货 3 亿台、渗透率 16%→35%；8 部门《促进智能家居消费行动方案》 — <a href="http://m.toutiao.com/group/7685536080099082771/" target="_blank" rel="noopener noreferrer">新浪财经</a>、<a href="http://m.toutiao.com/group/7686474575550349830/" target="_blank" rel="noopener noreferrer">华夏时报</a></li>
+    <li>Matter 1.6（摄像头纳入、NFC 配网）与 CES 2026 生态动向 — <a href="https://matter.cn/5763.html" target="_blank" rel="noopener noreferrer">Matter 中文官方网站</a>、<a href="https://matter.cn/4852.html" target="_blank" rel="noopener noreferrer">CES2026 趋势</a></li>
+    <li>智能音箱大模型渗透率超 55%（IDC） — <a href="https://epaper.cs.com.cn/zgzqb/html/2026-03/28/nw.D110000zgzqb_20260328_7-A01.htm" target="_blank" rel="noopener noreferrer">中国证券报</a></li>
+    <li>华为小艺管家 6.0"空间智能体"、小米 HyperOS 端侧模型 — <a href="http://www.xinhuanet.com/tech/20260615/24eb2188682f43bdbd05fabccbd95d09/c.html" target="_blank" rel="noopener noreferrer">新华网</a>、<a href="http://www.caict.ac.cn/kxyj/qwfb/ztbg/202604/P020260429600282400440.pdf" target="_blank" rel="noopener noreferrer">信通院《智能原生研究报告（2026）》</a></li>
+    <li>单位经济与 token 消耗量为方案估算值，量产前需按实际 API 报价复核</li>
+  </ul>
+  <p class="prev">系列文档：<a href="https://www.coze.cn/s/TVAToqmgb_w/" target="_blank" rel="noopener noreferrer">电视盒子 Token 平台商业方案</a> ｜ <a href="https://www.coze.cn/s/SpYj56PRg64/" target="_blank" rel="noopener noreferrer">可行性调研报告</a></p>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>家庭 AI 计量站 · 电视盒子 Token 平台方案</title>
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --ink:#1c2733; --ink-2:#4a5a6a; --ink-3:#7e8fa0;
+    --line:#dde4ea; --blue:#1a3a5c; --blue-2:#2e6da4; --blue-soft:#e8eff6;
+    --amber:#c9771e; --amber-soft:#faf0e2; --green:#2e7d4f; --red:#b03a2e;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.8;font-size:16px}
+  .page{max-width:960px;margin:0 auto;padding:0 22px}
+  header{padding:56px 0 26px;border-bottom:3px solid var(--blue)}
+  .kicker{font-size:12.5px;letter-spacing:.3em;color:var(--amber);font-weight:700;margin:0 0 12px}
+  h1{font-size:clamp(28px,5vw,42px);line-height:1.25;margin:0 0 14px;font-weight:800}
+  .lede{font-size:18px;color:var(--ink-2);margin:0 0 16px;max-width:760px}
+  .meta{font-size:13px;color:var(--ink-3)}
+  .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:26px 0 6px}
+  .scard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .scard b{display:block;font-size:22px;color:var(--blue);font-family:var(--mono)}
+  .scard span{font-size:13px;color:var(--ink-2)}
+  nav{padding:14px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+  nav a{color:var(--blue-2);text-decoration:none;margin-right:14px;white-space:nowrap}
+  nav a:hover{text-decoration:underline}
+  main{padding:34px 0 10px}
+  section{margin-bottom:54px}
+  h2{font-size:24px;margin:0 0 4px;font-weight:800;color:var(--blue)}
+  .sub{font-family:var(--mono);font-size:13px;color:var(--ink-3);margin:0 0 18px}
+  h3{font-size:17.5px;margin:24px 0 8px;color:var(--ink)}
+  p{margin:0 0 14px}
+  .tag{display:inline-block;background:var(--blue-soft);color:var(--blue);font-size:12px;padding:2px 9px;border-radius:99px;margin-right:6px;font-weight:600}
+  .tag.w{background:var(--amber-soft);color:var(--amber)}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:14.5px;margin:14px 0}
+  th,.rowhead{background:#eef2f6;text-align:left;font-weight:700}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td .m{font-family:var(--mono);font-size:13px;color:var(--blue-2)}
+  .wrap{overflow-x:auto}
+  .note{background:var(--amber-soft);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;font-size:14.5px;margin:16px 0}
+  .note b{color:var(--amber)}
+  .good{background:#eaf4ee;border-left:4px solid var(--green);border-radius:0 8px 8px 0;padding:12px 16px;font-size:14.5px;margin:16px 0}
+  .arch{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin:16px 0}
+  .arch svg{width:100%;height:auto;display:block}
+  .phase{border-left:3px solid var(--blue);padding:2px 0 2px 18px;margin:18px 0}
+  .phase .ph-t{font-weight:800;color:var(--blue)}
+  .phase .ph-m{font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+  .kpi{background:var(--card);border:1px dashed var(--line);border-radius:8px;padding:10px 12px;font-size:13px}
+  .kpi b{display:block;color:var(--blue);font-size:16px;font-family:var(--mono)}
+  .risk{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
+  footer{border-top:3px solid var(--blue);margin-top:10px;padding:24px 0 60px;font-size:13px;color:var(--ink-3)}
+  footer h3{font-size:14px;color:var(--ink);margin:0 0 8px}
+  footer ul{margin:0;padding-left:18px}
+  footer li{margin-bottom:5px}
+  .prev{margin-top:14px}
+  @media print{
+    body{background:#fff;font-size:11.5pt}
+    nav{display:none}
+    .arch,.scard,.kpi{border-color:#999}
+    a{color:#000;text-decoration:none}
+  }
+</style>
+</head>
+<body>
+<header class="page">
+  <p class="kicker">商业方案 · 基于可行性调研深化</p>
+  <h1>家庭 AI 计量站：把电视盒子做成<br>Token 调用平台的入口</h1>
+  <p class="lede">对标 OpenRouter，但入口不在开发者终端，而在客厅：一台电视盒子做"AI 主机"，电视做大屏与语音界面，手机管钱包。平台聚合国内已备案大模型，家庭按 token 计量付费——全家共用一个 AI 账户，像用水用电一样用 AI。</p>
+  <p class="meta">2026-09 · 承接《生肖 IP 与电视 AI 入口可行性调研报告》 · 数据截至 2026 年 9 月</p>
+  <div class="summary">
+    <div class="scard"><b>4.39 亿台</b><span>中国智能电视保有量，日均开机率 52%、使用 5.6 小时——客厅是家庭共享注意力的最大屏</span></div>
+    <div class="scard"><b>≈ 0</b><span>现有"大屏+AI"产品中跑通 token 付费闭环的数量：海信/TCL 接入大模型全部免费附赠，付费模式无人验证</span></div>
+    <div class="scard"><b>2–3 元</b><span>国产主流模型每百万 token 采购价量级——价格战让转售毛利变薄，但让"家庭包月无限用"成为可能</span></div>
+    <div class="scard"><b>29–49 元/月</b><span>家庭订阅定价锚点：对标视频网站会员，叠加"为孩子付费"的教育场景包</span></div>
+  </div>
+</header>
+
+<div class="page">
+<nav>
+  <a href="#s1">一、模式转译</a><a href="#s2">二、为什么现在</a><a href="#s3">三、产品架构</a><a href="#s4">四、路由与钱包</a><a href="#s5">五、商业模式</a><a href="#s6">六、合规安全</a><a href="#s7">七、竞争博弈</a><a href="#s8">八、12个月路线</a><a href="#s9">九、风险对冲</a>
+</nav>
+
+<main>
+
+<section id="s1">
+  <h2>一、模式转译：不是中国版 OpenRouter，是家庭 AI 的水电煤</h2>
+  <p class="sub">OpenRouter 服务开发者；这个产品服务家庭。转译错了，一切白做。</p>
+  <p>OpenRouter 的本质是<span class="tag">模型聚合</span><span class="tag">统一计费</span><span class="tag">一个 Key 调所有模型</span>。直接照搬到家庭会失败，因为家庭用户不开发应用、不关心模型名字、没有 API Key 概念。需要转译的是它的三层结构，而不是它的界面：</p>
+  <div class="wrap">
+  <table>
+    <tr><th>层</th><th>OpenRouter（开发者）</th><th>本方案（家庭）</th></tr>
+    <tr><td class="rowhead">聚合层</td><td>数十家模型 API 接入</td><td>接入 3–5 家国内已备案大模型（DeepSeek、豆包、GLM、Kimi、通义级）</td></tr>
+    <tr><td class="rowhead">路由层</td><td>开发者手动选模型</td><td><b>无感路由</b>：按任务类型、成本、延迟自动分配模型，用户永远不选</td></tr>
+    <tr><td class="rowhead">计费层</td><td>按 token 充值 Credit，加价 5–20%</td><td><b>家庭钱包</b>：包月订阅含基础额度 + 超量按量计费，全家共享一个池子</td></tr>
+    <tr><td class="rowhead">入口层</td><td>API Key / 网页</td><td><b>盒子+电视</b>（语音与大屏）+ 手机（钱包与管理）</td></tr>
+    <tr><td class="rowhead">护栏层</td><td>无</td><td><b>内容安全与未成年人模式</b>：家庭公共屏幕的硬约束，也是与 OpenRouter 最本质的差异</td></tr>
+  </table>
+  </div>
+  <p>一句话定位：<b>家里的 AI 电表</b>。电力公司不生产电器，它计量和输配电；这个平台不生产模型，它把所有合格模型变成家里一块统一计量的"AI 电表"，插上盒子全家通电。</p>
+</section>
+
+<section id="s2">
+  <h2>二、为什么是现在：三个窗口同时打开</h2>
+  <p class="sub">可行性调研的三个结论，构成这个方案的时间窗</p>
+  <h3>窗口一：屏幕在，付费缺口也在</h3>
+  <p>4.39 亿台智能电视、52% 日均开机率、5.6 小时日均使用，客厅屏幕是真实的家庭高频场景；但海信、TCL 等厂商接入大模型后全部免费附赠——<b>厂商证明了需求，却没人证明收费</b>。免费附赠的是"功能"，没被提供的是"服务"：全家人各自被记住的、可管理的、按需扩展的 AI 服务。</p>
+  <h3>窗口二：模型价格战把成本压到可包月</h3>
+  <p>国产主力模型每百万 token 输入价格已进入个位数区间，价格战仍在继续。对开发者是坏消息，对家庭包月是好消息：<b>一个重度家庭的月成本可以压到两位数人民币</b>，这让"29 元包月随便问"在成本端成立。纯转售会随着价格战继续变薄——所以商业模式重心必须放在场景包（第五节），token 差价只做底仓。</p>
+  <h3>窗口三：中立平台的位置还空着</h3>
+  <p>小米（电视份额第一+自研小爱）、华为（智慧屏+盘古）、海信/TCL（聚好看+接入 DeepSeek）都做过"电视+AI"，但它们都是<span class="tag w">利益冲突方</span>：要么推自家模型，要么绑定自家生态。家庭市场的"中立聚合层"——不偏袒任何模型、按效果与成本路由——这个位置目前没有人占。OpenRouter 之所以存在，正是因为模型厂商互相竞争、需要一个中立方；同样的结构条件在中国家庭市场刚刚成熟。</p>
+</section>
+
+<section id="s3">
+  <h2>三、产品架构：一台盒子，三个终端，一层平台</h2>
+  <p class="sub">电视是脸，盒子是心脏，手机是钱包——token 调用与电视解耦</p>
+  <div class="arch">
+  <svg viewBox="0 0 920 420" role="img" aria-label="架构图：电视盒子方案的三端与平台层">
+    <defs>
+      <marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#2e6da4"/></marker>
+    </defs>
+    <!-- 三端 -->
+    <g font-family="system-ui,-apple-system,'PingFang SC',sans-serif">
+      <rect x="30" y="30" width="200" height="110" rx="10" fill="#e8eff6" stroke="#1a3a5c" stroke-width="1.5"/>
+      <text x="130" y="62" text-anchor="middle" font-size="17" font-weight="700" fill="#1a3a5c">电视（显示+语音）</text>
+      <text x="130" y="90" text-anchor="middle" font-size="12.5" fill="#4a5a6a">大屏呈现 · 远场对话</text>
+      <text x="130" y="112" text-anchor="middle" font-size="12.5" fill="#4a5a6a">家庭共享界面 · 无支付</text>
+      <rect x="360" y="30" width="200" height="110" rx="10" fill="#faf0e2" stroke="#c9771e" stroke-width="2"/>
+      <text x="460" y="62" text-anchor="middle" font-size="17" font-weight="700" fill="#c9771e">AI 盒子（主机）</text>
+      <text x="460" y="90" text-anchor="middle" font-size="12.5" fill="#4a5a6a">远场麦克风阵列 · HDMI</text>
+      <text x="460" y="112" text-anchor="middle" font-size="12.5" fill="#4a5a6a">本地唤醒 + 会话管理</text>
+      <rect x="690" y="30" width="200" height="110" rx="10" fill="#e8eff6" stroke="#1a3a5c" stroke-width="1.5"/>
+      <text x="790" y="62" text-anchor="middle" font-size="17" font-weight="700" fill="#1a3a5c">手机（钱包+管理）</text>
+      <text x="790" y="90" text-anchor="middle" font-size="12.5" fill="#4a5a6a">充值 · 用量账单 · 成员管理</text>
+      <text x="790" y="112" text-anchor="middle" font-size="12.5" fill="#4a5a6a">内容偏好 · 家长控制</text>
+    </g>
+    <!-- 连接 -->
+    <line x1="230" y1="85" x2="358" y2="85" stroke="#2e6da4" stroke-width="1.5" marker-end="url(#ar)"/>
+    <line x1="560" y1="85" x2="688" y2="85" stroke="#2e6da4" stroke-width="1.5" marker-end="url(#ar)"/>
+    <!-- 平台层 -->
+    <rect x="30" y="200" width="860" height="120" rx="10" fill="#ffffff" stroke="#1a3a5c" stroke-width="1.5"/>
+    <text x="460" y="228" text-anchor="middle" font-size="16" font-weight="700" fill="#1a3a5c">平台层：家庭 AI 计量站（云）</text>
+    <g font-size="12.5" fill="#1c2733">
+      <rect x="60" y="248" width="185" height="54" rx="7" fill="#e8eff6"/><text x="152" y="270" text-anchor="middle" font-weight="700">无感路由引擎</text><text x="152" y="290" text-anchor="middle" fill="#4a5a6a">任务类型×成本×延迟</text>
+      <rect x="268" y="248" width="185" height="54" rx="7" fill="#e8eff6"/><text x="360" y="270" text-anchor="middle" font-weight="700">家庭账户与钱包</text><text x="360" y="290" text-anchor="middle" fill="#4a5a6a">成员×额度×用量账单</text>
+      <rect x="476" y="248" width="185" height="54" rx="7" fill="#e8eff6"/><text x="568" y="270" text-anchor="middle" font-weight="700">安全护栏</text><text x="568" y="290" text-anchor="middle" fill="#4a5a6a">审核·未成年人模式·审计</text>
+      <rect x="684" y="248" width="176" height="54" rx="7" fill="#e8eff6"/><text x="772" y="270" text-anchor="middle" font-weight="700">场景引擎</text><text x="772" y="290" text-anchor="middle" fill="#4a5a6a">教育·陪伴·家务·健康</text>
+    </g>
+    <line x1="460" y1="140" x2="460" y2="198" stroke="#2e6da4" stroke-width="1.5" marker-end="url(#ar)"/>
+    <!-- 模型层 -->
+    <rect x="30" y="360" width="860" height="46" rx="10" fill="#eef2f6" stroke="#dde4ea"/>
+    <text x="460" y="389" text-anchor="middle" font-size="14" font-weight="700" fill="#4a5a6a">模型层（API 采购）：DeepSeek ｜ 豆包 ｜ GLM ｜ Kimi ｜ 通义 —— 全部为已备案模型，按量采购</text>
+    <line x1="460" y1="320" x2="460" y2="358" stroke="#7e8fa0" stroke-width="1.5" marker-end="url(#ar)"/>
+  </svg>
+  </div>
+  <h3>盒子的职责边界（决定成本与体验）</h3>
+  <p>盒子做三件事：<b>远场语音采集</b>（4 麦阵列+回声消除，对着电视 3 米说话可用）、<b>会话管理</b>（家庭成员声纹识别——爸爸问的话和女儿的作业问题路由策略不同）、<b>大屏渲染</b>。不做本地大模型推理：2026 年的百元级 ARM 盒子跑不动合格的多模态模型，强行本地化只会拖垮体验；推理全部上云，走平台路由。这个取舍让 BOM 控制在约 280 元（RK3566 级 + 2G + 32G + 麦克风阵列），整机成本约 340 元，定价 499–599 元仍有健康毛利。</p>
+  <h3>手机端为什么必须先行</h3>
+  <p>可行性调研的结论之一：token 商业化闭环应在手机端完成——支付、账单、家长控制都发生在手机上，电视保持"零支付界面"。这同时解决两个问题：付费主体清晰（家长手机充值、全家消费），以及电视端合规风险最小化（公共屏幕不放任何交易入口）。</p>
+</section>
+
+<section id="s4">
+  <h2>四、路由引擎与家庭钱包：平台的两个核心资产</h2>
+  <p class="sub">用户永远不选模型——路由引擎替家庭管效果和成本，钱包替家庭管预算</p>
+  <h3>无感路由的三层规则</h3>
+  <div class="wrap">
+  <table>
+    <tr><th>规则</th><th>逻辑</th><th>示例</th></tr>
+    <tr><td class="rowhead">任务分类</td><td>意图识别后映射任务类型：速答/长文/数学推理/图像理解/口语陪练</td><td>"明天穿什么"→轻量快模型；"讲这道奥数题"→推理模型</td></tr>
+    <tr><td class="rowhead">成员画像</td><td>声纹/账号绑定成员档案：儿童账号强制走安全模型+教育路由，老人账号偏好慢速大音量+方言识别</td><td>女儿问作业→教育包模型+家长周报；爷爷问天气→默认模型+放大字幕</td></tr>
+    <tr><td class="rowhead">成本调度</td><td>非高峰/非关键任务降级到低价模型；单户超预算时自动切换经济档并提示</td><td>月末额度将尽，摘要类任务自动走最便宜的合规模型</td></tr>
+  </table>
+  </div>
+  <h3>家庭钱包的四个设计点</h3>
+  <p>① <b>成员子额度</b>：家长给每个成员设月度 token 额度，孩子超额度即停，防失控；② <b>用量可视化</b>：电视端屏保显示"本月全家 AI 用量"进度条，把消耗变成家庭话题；③ <b>场景包隔离计费</b>：教育包等专项额度单独计量，家长买得明白；④ <b>闲时转赠</b>：月底未用完额度可转下月或转赠亲友（获客机制）。</p>
+</section>
+
+<section id="s5">
+  <h2>五、商业模式：token 差价做底仓，场景包做利润，硬件做入口</h2>
+  <p class="sub">诚实账本：纯转售是薄利生意，毛利必须来自服务</p>
+  <div class="wrap">
+  <table>
+    <tr><th>收入线</th><th>定价</th><th>单位经济（估算）</th><th>角色</th></tr>
+    <tr><td class="rowhead">硬件：AI 盒子</td><td>499–599 元</td><td><span class="m">BOM≈280 + 制造认证≈60 → 毛利≈32%，扣渠道 15% 后净≈17%</span></td><td>入口与筛选器：买盒子的人才是目标家庭</td></tr>
+    <tr><td class="rowhead">家庭订阅</td><td>29 元/月（标准，含约 300 万 token）<br>49 元/月（畅享，约 800 万 token）</td><td><span class="m">重度户月耗约 1000 万 token × 综合采购价 ≈2 元/百万 → 成本 ≈20 元，标准档毛利 ≈31%</span></td><td>基本盘收入，类似宽带月费</td></tr>
+    <tr><td class="rowhead">超量 token</td><td>3–5 元/百万 token</td><td><span class="m">采购价 2 元上下 → 毛利 30–60%，随价格战承压</span></td><td>弹性收入</td></tr>
+    <tr><td class="rowhead">场景包</td><td>9.9–29 元/月·项</td><td><span class="m">教育包（作业辅导+口语陪练+家长周报）为旗舰；陪伴包（老人方言+用药提醒）次之</span></td><td><b>主利润来源</b>：为场景付费的意愿远高于为 token 付费</td></tr>
+    <tr><td class="rowhead">B 端输出</td><td>按户/年授权</td><td><span class="m">向二线 TV 厂商、IPTV 运营商输出"AI 计量站"能力，规避正面硬件竞争</span></td><td>规模化杠杆</td></tr>
+  </table>
+  </div>
+  <div class="note"><b>账本上最重要的一句话：</b>模型价格战每降一次价，token 差价就薄一分。这个方案的护城河不能是差价，必须是①家庭账户关系（换平台=全家习惯迁移成本）②场景运营深度（教育周报、家庭相册、健康提醒——这些是模型厂商不会为单一家庭做的事）③路由引擎的持续调优数据。差价只是让基本盘成立的底仓。</p></div>
+</section>
+
+<section id="s6">
+  <h2>六、合规与安全：这个生意的入场券，不是成本项</h2>
+  <p class="sub">面向家庭公共屏幕的 AI 服务，护栏本身就是产品力</p>
+  <p>三条合规主线：<b>① 模型侧</b>——只接入已通过生成式 AI 服务备案的模型，自身按"调用已备案模型的应用"路径完成登记，不自研模型就不踩备案深水区；<b>② 内容侧</b>——平台层内置审核管道（涉政涉黄涉暴拦截+未成年人模式强过滤），电视端默认开启青少年安全档；<b>③ 数据侧</b>——家庭语音数据本地唤醒、云端脱敏，隐私政策明确"声纹不上传原始音频"，这是家庭产品的信任底线。</p>
+  <div class="good">护栏反过来是卖点：家长愿意为"孩子安全使用 AI"付费，这恰恰是模型厂商直连 API 给不了的东西——<b>安全不是这个方案的成本，是第一个场景包</b>。</div>
+</section>
+
+<section id="s7">
+  <h2>七、竞争博弈：中立性的价值与大厂的三种反应</h2>
+  <p class="sub">大厂做不了这件事的原因，就是这个方案存在的理由</p>
+  <p>预判三种反应：<b>模仿</b>——某厂商推自家"AI 盒子"，但单一生态无法提供多模型路由，先天残缺；<b>收编</b>——大厂补贴硬件打价格战，对策是避开硬件规模战，靠 B 端授权与运营商渠道走量，硬件只承担筛选用户职能；<b>采购</b>——最好的结局：某 TV 厂商或 IPTV 运营商直接把平台层买进去预装，本方案从零售转型为能力输出。<b>运营商是天然的盟友</b>：IPTV 有存量盒子、有家庭缴费通道、有"增值业务"运营经验，唯独没有 AI 能力——这是一条比电商卖盒子更宽的渠道。</p>
+</section>
+
+<section id="s8">
+  <h2>八、12 个月路线图：软件先行，硬件跟进，每阶段设闸门</h2>
+  <p class="sub">用最便宜的验证顺序：先证明家庭愿意为 AI 服务付费，再制造硬件</p>
+  <div class="phase">
+    <div class="ph-t">Phase 0 · 技术验证（第 0–3 月）</div>
+    <div class="ph-m">团队：4–6 人（后端 2、端侧 1–2、产品 1、合规 1）</div>
+    <p>接入 3 家模型 API，跑通无感路由+审核管道+家庭账户原型；手机 App（钱包+对话）与电视端 APK（适配主流 TV OS）各出 Alpha 版。投入级：百万级。</p>
+    <div class="kpis">
+      <div class="kpi"><b>路由可用</b><span>5 类任务分类准确率 &gt;90%</span></div>
+      <div class="kpi"><b>护栏生效</b><span>未成年人模式全链路走通</span></div>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="ph-t">Phase 1 · 千户内测（第 4–6 月）</div>
+    <div class="ph-m">软件先行：App+现有电视安装 APK，暂不做硬件；同时启动盒子公模开发</div>
+    <p>1000 户种子家庭（优先有学龄儿童与同住老人的家庭），免费试用 3 个月后推订阅。这一步同时验证两件事：家庭真实使用频次、以及"无盒子也有付费意愿"——为硬件决策提供数据。</p>
+    <div class="kpis">
+      <div class="kpi"><b>Go/No-Go 门 1</b><span>免费转付费率 ≥12%</span></div>
+      <div class="kpi"><b>日活结构</b><span>户均 ≥2 名成员周活</span></div>
+      <div class="kpi"><b>粘性</b><span>8 周留存 ≥45%</span></div>
+      <div class="kpi"><b>场景信号</b><span>教育类调用占比 ≥35%</span></div>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="ph-t">Phase 2 · 盒子量产与商业化（第 7–12 月）</div>
+    <div class="ph-m">首批 1–2 万台盒子 + 订阅正式定价 + 教育包上线</div>
+    <p>硬件按内测数据定产；与一家二线 TV 厂商或省级 IPTV 谈预装/渠道合作；启动"教育场景包"付费运营——这是决定毛利结构的关键阶段。</p>
+    <div class="kpis">
+      <div class="kpi"><b>Go/No-Go 门 2</b><span>盒子月活 ≥60%</span></div>
+      <div class="kpi"><b>ARPU</b><span>付费户月均 ≥38 元（订阅+超量+场景包）</span></div>
+      <div class="kpi"><b>渠道</b><span>签下 ≥1 家 B 端预装意向</span></div>
+    </div>
+  </div>
+  <div class="note"><b>降险选项：</b>若 Phase 1 显示"软件形态付费率达标、但电视端使用率低"，则推迟硬件、转纯 App+电视投屏模式运营——平台层的价值（路由、钱包、护栏、场景包）不依赖盒子成立；盒子永远是"体验增强器"，而不是业务的前提。</div>
+</section>
+
+<section id="s9">
+  <h2>九、风险清单与对冲</h2>
+  <p class="sub">按杀伤力排序</p>
+  <div class="wrap">
+  <table class="risk">
+    <tr><th>风险</th><th>杀伤力</th><th>对冲</th></tr>
+    <tr><td>客厅 AI 需求伪命题：电视语音交互频率远低于预期</td><td>高</td><td>Phase 1 前置验证 Go/No-Go 门；软件先行，硬件可推迟；手机端兜底承接账户体系</td></tr>
+    <tr><td>合规路径变化：聚合调用模式监管收紧</td><td>高</td><td>只接已备案模型+自身登记；未成年人模式按最高标准建；预留单一模型直连的降级方案</td></tr>
+    <tr><td>大厂价格战挤压：硬件补贴+免费大模型直供</td><td>中</td><td>不打硬件规模战；场景包与家庭账户做差异化；B 端授权绕开正面战场</td></tr>
+    <tr><td>模型厂商绕过平台直连家庭</td><td>中</td><td>价值重心放在路由/护栏/场景/家庭多成员体系——这些是模型厂商不会做的"最后一公里"</td></tr>
+    <tr><td>token 差价被价格战清零</td><td>中</td><td>定价结构中差价占比≤30%，利润重心在场景包（第五节）</td></tr>
+    <tr><td>语音数据隐私事件</td><td>高（一次性致命）</td><td>本地唤醒、原始音频不出盒、声纹本地化；把隐私承诺写进硬件规格而非只是隐私政策</td></tr>
+  </table>
+  </div>
+  <p>这个方案成立与否，最终不取决于技术——路由、钱包、护栏都是确定性工程——而取决于一个待验证的家庭行为假设：<b>一家人是否真的会在客厅里，共同使用同一个 AI</b>。12 个月路线图里所有的闸门，都是为了尽早知道这个假设的真伪。</p>
+</section>
+
+</main>
+
+<footer class="page">
+  <h3>数据来源</h3>
+  <ul>
+    <li>智能电视保有量 4.39 亿台、开机率 52%、日均 5.6 小时；海信/TCL 接入大模型现状——见《生肖 IP 与电视 AI 入口可行性调研报告》（2026-09，本工作目录）</li>
+    <li>潮玩 879.7 亿、谷子经济 2021 亿、LABUBU 收入首降 7.5% 等市场数据——同上报告及 <a href="http://www.bbtnews.com.cn/2026/0916/606040.shtml" target="_blank" rel="noopener noreferrer">北京商报</a>、<a href="https://www.chinanews.com.cn/cj/2026/09-15/10696526.shtml" target="_blank" rel="noopener noreferrer">中新网</a></li>
+    <li>国产模型 token 价格量级——各厂商 2026 年公开定价页，采购价按百万 token 两位数以内估算，量产前需按实际报价复核</li>
+    <li>单位经济测算为方案估算值（BOM、定价、用量假设已在文中标明），非实测数据</li>
+  </ul>
+  <p class="prev">前置调研：<a href="https://www.coze.cn/s/SpYj56PRg64/" target="_blank" rel="noopener noreferrer">生肖 IP 与电视 AI 入口可行性调研报告</a></p>
+</footer>
+</div>
+</body>
+</html>
